@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brooklyn Ramos — Hitting Diagnostic & Swing Program</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e1116;
+    --bg-card: #161a22;
+    --bg-elev: #1d222c;
+    --ink: #e8e6e1;
+    --ink-dim: #9aa0ac;
+    --ink-faint: #5b6170;
+    --accent: #ffd24a;     /* softball yellow */
+    --accent-2: #ff7a3c;   /* burnt orange */
+    --good: #6fdc8c;
+    --warn: #ffb648;
+    --bad: #ff5d5d;
+    --rule: #2a2f3b;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+
+  /* HERO */
+  .hero {
+    border-bottom: 1px solid var(--rule);
+    padding: 56px 0 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(800px 400px at 85% 10%, rgba(255,210,74,0.08), transparent 70%);
+    pointer-events: none;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.18em;
+    color: var(--accent); text-transform: uppercase;
+  }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 7vw, 88px);
+    line-height: 0.95; letter-spacing: 0.01em;
+    margin: 12px 0 8px; font-weight: 400;
+  }
+  h1 .accent { color: var(--accent); }
+  .subhead { color: var(--ink-dim); font-size: 18px; max-width: 640px; }
+  .meta-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    margin-top: 36px; padding-top: 28px; border-top: 1px solid var(--rule);
+  }
+  .meta-grid .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--ink-faint); letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .meta-grid .value {
+    font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--ink);
+    margin-top: 4px;
+  }
+
+  /* SECTIONS */
+  section { padding: 64px 0; border-bottom: 1px solid var(--rule); }
+  .section-no {
+    font-family: 'JetBrains Mono', monospace; color: var(--accent);
+    font-size: 12px; letter-spacing: 0.18em;
+  }
+  h2 {
+    font-family: 'Bebas Neue', sans-serif; font-weight: 400;
+    font-size: clamp(36px, 4.5vw, 56px); line-height: 1; margin: 6px 0 18px;
+    letter-spacing: 0.01em;
+  }
+  h3 {
+    font-family: 'Bebas Neue', sans-serif; font-weight: 400;
+    font-size: 26px; margin: 36px 0 12px; color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+  h4 {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    margin: 24px 0 10px; color: var(--accent);
+  }
+  p { margin: 0 0 14px; color: var(--ink); }
+  p.lead { font-size: 19px; color: var(--ink-dim); max-width: 760px; }
+  em { color: var(--accent); font-style: italic; }
+  strong { color: var(--ink); font-weight: 600; }
+
+  /* FINDING CARDS */
+  .findings {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 18px; margin: 32px 0;
+  }
+  .finding {
+    background: var(--bg-card); border: 1px solid var(--rule);
+    border-radius: 4px; padding: 22px 24px;
+    border-left: 3px solid var(--accent);
+  }
+  .finding.bad { border-left-color: var(--bad); }
+  .finding.good { border-left-color: var(--good); }
+  .finding.warn { border-left-color: var(--warn); }
+  .finding .tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-faint);
+    margin-bottom: 6px;
+  }
+  .finding .stat {
+    font-family: 'Bebas Neue', sans-serif; font-size: 36px; line-height: 1;
+    color: var(--accent); margin-bottom: 8px;
+  }
+  .finding.bad .stat { color: var(--bad); }
+  .finding.good .stat { color: var(--good); }
+  .finding.warn .stat { color: var(--warn); }
+  .finding .label-line {
+    font-size: 14px; color: var(--ink); line-height: 1.4;
+  }
+  .finding .label-line span.dim { color: var(--ink-dim); }
+
+  /* CEILING vs REALITY */
+  .ceiling-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+    margin: 28px 0;
+  }
+  .ceiling {
+    background: var(--bg-card); border: 1px solid var(--rule);
+    padding: 24px; border-radius: 4px;
+  }
+  .ceiling .metric-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--ink-faint); letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .ceiling .bar-wrap { margin-top: 18px; }
+  .ceiling .bar-row {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 6px; font-size: 13px;
+  }
+  .ceiling .bar-row .name {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--ink-dim); width: 56px;
+  }
+  .ceiling .bar-row .val {
+    font-family: 'Bebas Neue', sans-serif; font-size: 22px;
+    color: var(--ink); margin-left: auto;
+  }
+  .bar {
+    height: 8px; background: var(--bg-elev); border-radius: 1px;
+    flex: 1; overflow: hidden;
+  }
+  .bar-fill { height: 100%; background: var(--accent-2); }
+  .bar-fill.peak { background: var(--accent); }
+
+  /* STRIKE ZONE HEAT MAP */
+  .zones {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 28px 0;
+  }
+  .zone-card {
+    background: var(--bg-card); border: 1px solid var(--rule);
+    padding: 24px; border-radius: 4px;
+  }
+  .zone-card .zone-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 22px;
+    margin-bottom: 4px; letter-spacing: 0.02em;
+  }
+  .zone-card .zone-sub {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--ink-faint); margin-bottom: 18px; letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .zone-grid-svg { width: 100%; max-width: 380px; margin: 0 auto; display: block; }
+  .zone-legend {
+    display: flex; justify-content: space-between; gap: 8px;
+    margin-top: 16px; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-dim); letter-spacing: 0.08em;
+  }
+
+  /* DIAGNOSIS CHAIN */
+  .chain {
+    background: var(--bg-card); border: 1px solid var(--rule);
+    padding: 32px; border-radius: 4px; margin: 28px 0;
+  }
+  .chain-row {
+    display: grid; grid-template-columns: 1.2fr auto 1fr; gap: 20px;
+    align-items: center; margin-bottom: 16px;
+  }
+  .chain-row .from {
+    background: var(--bg-elev); padding: 14px 18px; border-radius: 2px;
+    border-left: 2px solid var(--ink-faint);
+  }
+  .chain-row .to {
+    background: var(--bg-elev); padding: 14px 18px; border-radius: 2px;
+    border-left: 2px solid var(--bad);
+  }
+  .chain-row .arrow {
+    font-family: 'JetBrains Mono', monospace; color: var(--accent);
+    font-size: 20px; text-align: center;
+  }
+  .chain-row .from .lbl, .chain-row .to .lbl {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--ink-faint); margin-bottom: 4px;
+  }
+  .chain-row .from .text, .chain-row .to .text {
+    font-size: 14px; line-height: 1.4;
+  }
+
+  /* SESSION TREND TABLE */
+  .table-wrap { overflow-x: auto; margin: 24px 0; }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  }
+  th {
+    text-align: left; padding: 12px 16px; color: var(--ink-faint);
+    font-weight: 500; font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; border-bottom: 1px solid var(--rule);
+  }
+  td {
+    padding: 14px 16px; border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+  }
+  tr:last-child td { border-bottom: none; }
+  td.num { font-variant-numeric: tabular-nums; }
+  td.good { color: var(--good); }
+  td.bad { color: var(--bad); }
+  td.warn { color: var(--warn); }
+  .session-row { background: var(--bg-card); }
+  .session-row:nth-child(even) { background: var(--bg-elev); }
+
+  /* TREND CHART */
+  .chart-wrap {
+    background: var(--bg-card); border: 1px solid var(--rule);
+    padding: 32px 24px 24px; border-radius: 4px; margin: 28px 0;
+  }
+  .chart-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 22px;
+    margin-bottom: 4px; letter-spacing: 0.02em;
+  }
+  .chart-sub {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--ink-faint); margin-bottom: 24px; letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* PROGRAM */
+  .phase {
+    background: var(--bg-card); border: 1px solid var(--rule);
+    border-radius: 4px; margin-bottom: 28px;
+    border-left: 4px solid var(--accent);
+  }
+  .phase-head {
+    display: flex; align-items: baseline; gap: 18px;
+    padding: 22px 28px; border-bottom: 1px solid var(--rule);
+  }
+  .phase-no {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--accent); letter-spacing: 0.12em;
+  }
+  .phase-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 26px;
+    letter-spacing: 0.02em;
+  }
+  .phase-weeks {
+    margin-left: auto; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--ink-dim); letter-spacing: 0.1em;
+  }
+  .phase-body { padding: 24px 28px 28px; }
+  .phase-goal {
+    font-style: italic; color: var(--ink-dim);
+    border-left: 2px solid var(--accent); padding-left: 14px;
+    margin-bottom: 20px; font-size: 15px;
+  }
+  .drills { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .drill {
+    background: var(--bg-elev); padding: 18px 20px;
+    border-radius: 3px; border: 1px solid var(--rule);
+  }
+  .drill-name {
+    font-family: 'Bebas Neue', sans-serif; font-size: 18px;
+    color: var(--accent); margin-bottom: 6px; letter-spacing: 0.02em;
+  }
+  .drill-spec {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--ink-faint); margin-bottom: 10px; letter-spacing: 0.06em;
+  }
+  .drill-desc {
+    font-size: 14px; line-height: 1.5;
+  }
+  .drill-cue {
+    margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--rule);
+    font-size: 13px; color: var(--ink-dim);
+  }
+  .drill-cue strong { color: var(--accent); }
+
+  /* KPI Targets */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    margin: 24px 0;
+  }
+  .kpi {
+    background: var(--bg-card); border: 1px solid var(--rule);
+    padding: 18px 20px; border-radius: 3px;
+  }
+  .kpi .name {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--ink-faint); letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .kpi .nums {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-top: 6px;
+  }
+  .kpi .now {
+    font-family: 'Bebas Neue', sans-serif; font-size: 28px;
+    color: var(--ink-dim);
+  }
+  .kpi .arrow { color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+  .kpi .target {
+    font-family: 'Bebas Neue', sans-serif; font-size: 28px;
+    color: var(--accent);
+  }
+  .kpi .unit {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--ink-faint); align-self: center;
+  }
+
+  /* CALLOUT */
+  .callout {
+    background: linear-gradient(135deg, rgba(255,210,74,0.08), rgba(255,122,60,0.04));
+    border: 1px solid rgba(255,210,74,0.2);
+    padding: 22px 26px; border-radius: 4px; margin: 28px 0;
+    border-left: 3px solid var(--accent);
+  }
+  .callout .lbl {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--accent); letter-spacing: 0.14em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .callout p { margin-bottom: 0; }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 0 60px; color: var(--ink-faint);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.1em; text-align: center;
+  }
+
+  @media (max-width: 740px) {
+    .findings, .ceiling-grid, .zones, .drills, .kpi-grid { grid-template-columns: 1fr; }
+    .meta-grid { grid-template-columns: repeat(2, 1fr); }
+    .chain-row { grid-template-columns: 1fr; gap: 8px; text-align: left; }
+    .chain-row .arrow { transform: rotate(90deg); justify-self: start; }
+    .container { padding: 0 20px; }
+  }
+  @media print {
+    body { background: white; color: black; }
+    .container { max-width: 100%; }
+    section { page-break-inside: avoid; padding: 32px 0; }
+    .phase, .finding, .ceiling, .zone-card, .chart-wrap, .chain { page-break-inside: avoid; }
+    .hero::before { display: none; }
+    h1, h2, h3, h4 { color: black; }
+    p, td, th { color: #222; }
+    .bar { background: #ddd; }
+    .bar-fill { background: #888; }
+    .bar-fill.peak { background: #444; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="container">
+    <div class="eyebrow">Hitting Diagnostic Report · Spring 2026</div>
+    <h1>Brooklyn Ramos<br><span class="accent">Swing Audit & Program</span></h1>
+    <p class="subhead">358 Rapsodo contacts across 5 sessions, 144 Blast swings — synthesized into a mechanical diagnosis, an 8-week corrective program, and now a progress check.</p>
+    <div class="meta-grid">
+      <div><div class="label">Player</div><div class="value">14U · RHB</div></div>
+      <div><div class="label">Frame</div><div class="value">5'5" · 130 lb</div></div>
+      <div><div class="label">Data Window</div><div class="value">Mar 7 – May 1</div></div>
+      <div><div class="label">Trajectory</div><div class="value">College-bound</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- THE BIG PICTURE -->
+<section>
+  <div class="container">
+    <div class="section-no">01 · EXECUTIVE SUMMARY</div>
+    <h2>One Root Cause, Cascading Symptoms</h2>
+    <p class="lead">The numbers and the video tell the same story from different angles: Brooklyn's torso is opening too early in the downswing, and her hands and wrists are paying the bill for it. Everything else — the flat finish, the roll-over grounders, the under-cut pop-ups, the velocity struggles — is a symptom downstream of that one problem.</p>
+
+    <div class="callout">
+      <div class="lbl">The headline number</div>
+      <p>Her <strong>Early Connection</strong> averages <strong>117°</strong> across 144 swings — a perfect-position number is 90°. When she manages to start the downswing within 15° of 90°, her bat speed jumps from <strong>51 mph to 60 mph</strong>. Same hitter. Same body. Just sequenced correctly. That 9-mph swing is sitting there waiting to be unlocked.</p>
+    </div>
+
+    <h3>What's Working</h3>
+    <div class="findings">
+      <div class="finding good">
+        <div class="tag">Power Ceiling (EV)</div>
+        <div class="stat">87.7 mph</div>
+        <div class="label-line">Strongest legitimate exit velocity (May 1). <span class="dim">Top 10% of contacts now averaging 64 mph EV — clear, repeatable thump for her age and frame.</span></div>
+      </div>
+      <div class="finding good">
+        <div class="tag">Realistic Carry</div>
+        <div class="stat">~200 ft</div>
+        <div class="label-line">Top-end carry on her best-struck balls (P95 = 195 ft, P90 = 190 ft). <span class="dim">Best-tracked Rapsodo distances run optimistic; this is the honest, repeatable ceiling and it backs up the 200-ft game shot.</span></div>
+      </div>
+      <div class="finding good">
+        <div class="tag">Outside Coverage (cage)</div>
+        <div class="stat">+3 mph</div>
+        <div class="label-line">EV holds up across the outer third (54.4 mph) vs. inside (51.5). <span class="dim">Cage coverage is solid; game-coverage gap is recognition & timing, not contact ability.</span></div>
+      </div>
+      <div class="finding good">
+        <div class="tag">Impact Position</div>
+        <div class="stat">91.6°</div>
+        <div class="label-line">Connection-at-Impact is essentially perfect. <span class="dim">She arrives at contact in a great position — the journey there is the issue.</span></div>
+      </div>
+    </div>
+
+    <h3>What's Holding Her Back</h3>
+    <div class="findings">
+      <div class="finding bad">
+        <div class="tag">Body Sequencing</div>
+        <div class="stat">+27°</div>
+        <div class="label-line">Early Connection averages 117° (target 90°). <span class="dim">Torso is rotating open before the bat starts forward — this is the engine of every other problem.</span></div>
+      </div>
+      <div class="finding bad">
+        <div class="tag">Time to Contact</div>
+        <div class="stat">0.20s</div>
+        <div class="label-line">Slow vs. velocity (target 0.14–0.17s). <span class="dim">This is the metric that explains "she struggles against velocity." Long bat path = no margin against fast pitching.</span></div>
+      </div>
+      <div class="finding bad">
+        <div class="tag">Attack Angle</div>
+        <div class="stat">+18.7°</div>
+        <div class="label-line">Steep upper-cut (target +5° to +15°). <span class="dim">Direct cause of "missing under the ball" — bat is climbing through impact, ball gets the bottom-half.</span></div>
+      </div>
+      <div class="finding warn">
+        <div class="tag">Consistency</div>
+        <div class="stat">12%</div>
+        <div class="label-line">Only 12% of swings have well-sequenced posture. <span class="dim">She has a high ceiling but a low floor — the work is raising the floor.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CEILING vs CONSISTENCY -->
+<section>
+  <div class="container">
+    <div class="section-no">02 · CEILINGS vs CONSISTENCY</div>
+    <h2>The Talent Is In There. The Floor Is Low.</h2>
+    <p class="lead">Across both data sources, the same pattern holds: her best swings are excellent, her average swings are not. The job for the next 8 weeks is not to raise the ceiling — it's to drag the average up to meet it.</p>
+
+    <div class="ceiling-grid">
+      <div class="ceiling">
+        <div class="metric-label">Bat Speed (Blast, n=144)</div>
+        <div class="bar-wrap">
+          <div class="bar-row"><span class="name">AVG</span><div class="bar"><div class="bar-fill" style="width:80.1%"></div></div><span class="val">52.2</span></div>
+          <div class="bar-row"><span class="name">P90</span><div class="bar"><div class="bar-fill" style="width:92.5%"></div></div><span class="val">60.3</span></div>
+          <div class="bar-row"><span class="name">MAX</span><div class="bar"><div class="bar-fill peak" style="width:100%"></div></div><span class="val">65.2</span></div>
+        </div>
+        <div class="zone-legend"><span>13 mph between average and peak</span></div>
+      </div>
+      <div class="ceiling">
+        <div class="metric-label">Exit Velocity (Rapsodo, n=358)</div>
+        <div class="bar-wrap">
+          <div class="bar-row"><span class="name">AVG</span><div class="bar"><div class="bar-fill" style="width:61.2%"></div></div><span class="val">53.6</span></div>
+          <div class="bar-row"><span class="name">P90</span><div class="bar"><div class="bar-fill" style="width:70.3%"></div></div><span class="val">61.5</span></div>
+          <div class="bar-row"><span class="name">MAX</span><div class="bar"><div class="bar-fill peak" style="width:100%"></div></div><span class="val">87.7</span></div>
+        </div>
+        <div class="zone-legend"><span>34 mph between average and best legitimate strike</span></div>
+      </div>
+      <div class="ceiling">
+        <div class="metric-label">Carry Distance (Rapsodo, percentile-based)</div>
+        <div class="bar-wrap">
+          <div class="bar-row"><span class="name">P50</span><div class="bar"><div class="bar-fill" style="width:57.2%"></div></div><span class="val">123</span></div>
+          <div class="bar-row"><span class="name">P90</span><div class="bar"><div class="bar-fill" style="width:88.4%"></div></div><span class="val">190</span></div>
+          <div class="bar-row"><span class="name">P95</span><div class="bar"><div class="bar-fill peak" style="width:100%"></div></div><span class="val">215</span></div>
+        </div>
+        <div class="zone-legend"><span>Rapsodo's max readings (300+) tend to overstate; this is the honest top-5% range</span></div>
+      </div>
+    </div>
+
+    <h3>What "Best Swings" Actually Look Like</h3>
+    <p>Filtered the 17 Blast swings where Early Connection was within 15° of 90° (well-sequenced), and compared them to the 68 swings where Early Connection was 30°+ off (poorly sequenced):</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Well-Sequenced (n=17)</th>
+            <th>Poorly Sequenced (n=68)</th>
+            <th>Δ Improvement</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Bat Speed (mph)</td><td class="num good">59.9</td><td class="num bad">50.8</td><td class="num good">+9.1</td></tr>
+          <tr><td>Time to Contact (s)</td><td class="num good">0.16</td><td class="num bad">0.21</td><td class="num good">−0.05</td></tr>
+          <tr><td>Attack Angle (°)</td><td class="num good">11.1</td><td class="num bad">19.0</td><td class="num good">−7.9</td></tr>
+          <tr><td>Connection Score</td><td class="num good">61.7</td><td class="num bad">34.2</td><td class="num good">+27.5</td></tr>
+          <tr><td>Rotation Score</td><td class="num good">60.1</td><td class="num bad">38.4</td><td class="num good">+21.7</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>This is the program in one table. Every metric — bat speed, attack angle, time to contact, scores — moves the right direction when the body simply stays closed at the start of the downswing. <em>The fix is not about adding power. It's about restoring sequence.</em></p>
+  </div>
+</section>
+
+<!-- STRIKE ZONE HEAT MAPS -->
+<section>
+  <div class="container">
+    <div class="section-no">03 · STRIKE ZONE COVERAGE</div>
+    <h2>Where She Hurts the Ball — and Where She Doesn't</h2>
+    <p class="lead">Mapped 148 Rapsodo contacts to a 9-zone grid (Mar 7 – Apr 21; the May 1 file recorded all hits with zone fields blanked out, so it's excluded from this map). The pattern is still clean: <strong>upper-middle is her loud zone, low-inside is her dead zone</strong>, and the entire bottom row is the under-cut signature.</p>
+
+    <div class="zones">
+      <div class="zone-card">
+        <div class="zone-title">Average Exit Velocity (mph)</div>
+        <div class="zone-sub">By Pitch Location · Catcher's Perspective</div>
+        <svg class="zone-grid-svg" viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg">
+          <!-- background plate -->
+          <rect x="20" y="20" width="340" height="340" fill="none" stroke="#2a2f3b" stroke-width="1" rx="4"/>
+          <!-- High row -->
+          <rect x="20" y="20" width="113" height="113" fill="#3a2a1f" stroke="#1d222c" stroke-width="2"/>
+          <rect x="133" y="20" width="114" height="113" fill="#7a4f1d" stroke="#1d222c" stroke-width="2"/>
+          <rect x="247" y="20" width="113" height="113" fill="#5a3d1f" stroke="#1d222c" stroke-width="2"/>
+          <!-- Mid row -->
+          <rect x="20" y="133" width="113" height="114" fill="#503820" stroke="#1d222c" stroke-width="2"/>
+          <rect x="133" y="133" width="114" height="114" fill="#5a3d1f" stroke="#1d222c" stroke-width="2"/>
+          <rect x="247" y="133" width="113" height="114" fill="#553a1f" stroke="#1d222c" stroke-width="2"/>
+          <!-- Low row -->
+          <rect x="20" y="247" width="113" height="113" fill="#2c2018" stroke="#1d222c" stroke-width="2"/>
+          <rect x="133" y="247" width="114" height="113" fill="#322419" stroke="#1d222c" stroke-width="2"/>
+          <rect x="247" y="247" width="113" height="113" fill="#503820" stroke="#1d222c" stroke-width="2"/>
+
+          <!-- Numbers -->
+          <text x="76" y="86" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#e8e6e1">50.6</text>
+          <text x="76" y="106" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9aa0ac">n=24</text>
+          <text x="190" y="86" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#ffd24a">56.3</text>
+          <text x="190" y="106" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9aa0ac">n=17</text>
+          <text x="303" y="86" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#e8e6e1">54.1</text>
+          <text x="303" y="106" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9aa0ac">n=31</text>
+
+          <text x="76" y="200" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#e8e6e1">54.0</text>
+          <text x="76" y="220" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9aa0ac">n=12</text>
+          <text x="190" y="200" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#e8e6e1">55.2</text>
+          <text x="190" y="220" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9aa0ac">n=10</text>
+          <text x="303" y="200" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#e8e6e1">54.7</text>
+          <text x="303" y="220" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9aa0ac">n=13</text>
+
+          <text x="76" y="313" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#ff5d5d">44.0</text>
+          <text x="76" y="333" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9aa0ac">n=17</text>
+          <text x="190" y="313" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#ffb648">49.6</text>
+          <text x="190" y="333" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9aa0ac">n=8</text>
+          <text x="303" y="313" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#e8e6e1">54.3</text>
+          <text x="303" y="333" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9aa0ac">n=16</text>
+
+          <!-- Labels around -->
+          <text x="190" y="13" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#5b6170" letter-spacing="2">HIGH</text>
+          <text x="190" y="378" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#5b6170" letter-spacing="2">LOW</text>
+          <text x="10" y="80" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="#5b6170">IN</text>
+          <text x="370" y="80" font-family="JetBrains Mono" font-size="10" fill="#5b6170">OUT</text>
+        </svg>
+        <div class="zone-legend"><span>cold</span><span>—— mph ——</span><span>HOT</span></div>
+      </div>
+
+      <div class="zone-card">
+        <div class="zone-title">Average Launch Angle (°)</div>
+        <div class="zone-sub">High LA on Low Pitches = Missing Under</div>
+        <svg class="zone-grid-svg" viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg">
+          <rect x="20" y="20" width="340" height="340" fill="none" stroke="#2a2f3b" stroke-width="1" rx="4"/>
+          <!-- High row -->
+          <rect x="20" y="20" width="113" height="113" fill="#1f3a28" stroke="#1d222c" stroke-width="2"/>
+          <rect x="133" y="20" width="114" height="113" fill="#322419" stroke="#1d222c" stroke-width="2"/>
+          <rect x="247" y="20" width="113" height="113" fill="#1f3a28" stroke="#1d222c" stroke-width="2"/>
+          <!-- Mid row -->
+          <rect x="20" y="133" width="113" height="114" fill="#382820" stroke="#1d222c" stroke-width="2"/>
+          <rect x="133" y="133" width="114" height="114" fill="#322419" stroke="#1d222c" stroke-width="2"/>
+          <rect x="247" y="133" width="113" height="114" fill="#382820" stroke="#1d222c" stroke-width="2"/>
+          <!-- Low row -->
+          <rect x="20" y="247" width="113" height="113" fill="#7a3a1d" stroke="#1d222c" stroke-width="2"/>
+          <rect x="133" y="247" width="114" height="113" fill="#7a3a1d" stroke="#1d222c" stroke-width="2"/>
+          <rect x="247" y="247" width="113" height="113" fill="#5a2f1c" stroke="#1d222c" stroke-width="2"/>
+
+          <!-- Numbers -->
+          <text x="76" y="86" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#6fdc8c">18.9°</text>
+          <text x="190" y="86" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#e8e6e1">25.0°</text>
+          <text x="303" y="86" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#6fdc8c">19.8°</text>
+          <text x="76" y="200" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#e8e6e1">25.9°</text>
+          <text x="190" y="200" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#e8e6e1">23.6°</text>
+          <text x="303" y="200" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#e8e6e1">25.1°</text>
+          <text x="76" y="313" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#ff5d5d">38.3°</text>
+          <text x="190" y="313" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#ff5d5d">37.5°</text>
+          <text x="303" y="313" text-anchor="middle" font-family="Bebas Neue" font-size="34" fill="#ffb648">31.3°</text>
+
+          <text x="190" y="13" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#5b6170" letter-spacing="2">HIGH</text>
+          <text x="190" y="378" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#5b6170" letter-spacing="2">LOW</text>
+          <text x="10" y="80" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="#5b6170">IN</text>
+          <text x="370" y="80" font-family="JetBrains Mono" font-size="10" fill="#5b6170">OUT</text>
+        </svg>
+        <div class="zone-legend"><span>flat</span><span>—— launch ——</span><span>STEEP</span></div>
+      </div>
+    </div>
+
+    <h3>Reading the Zones</h3>
+    <h4>The Loud Zone — Upper Half</h4>
+    <p>The top row averages <strong>53.7 mph EV</strong> with launch angles in the healthy 19–25° band. Up-middle is her hottest cell at <strong>56.3 mph</strong>. When the pitch is up, she has time to extend through it — the early-opening pattern hurts her less because the bat path catches the ball cleanly on the way up.</p>
+
+    <h4>The Dead Zone — Low & Inside</h4>
+    <p>Down & in she's <strong>10+ mph slower (44.0 mph EV)</strong> and her launch angle blows out to <strong>38.3°</strong>. This is the "grounder/pop-up to the left side" you're seeing in games. When she gets a pitch that requires the hands to stay inside and the barrel to come down, the early-opening pattern jams her, the wrists roll, and the ball gets either rolled over weakly or popped up to the pull side.</p>
+
+    <h4>The Hidden Pattern — Low Pitches Generally</h4>
+    <p>Across the entire bottom row, launch angles average <strong>31–38°</strong>. Compare that to the top row (19–25°). She is <em>systematically getting under low pitches</em> regardless of inside/outside. That's the steep attack-angle problem made visible: her bat is climbing through the bottom of the zone instead of leveling out.</p>
+
+    <h4>The Game Disconnect</h4>
+    <p>Her cage data shows good outside-half coverage (54+ mph EV across the outer column). The user reports poor outside coverage <em>in games</em>. Both observations are correct — it's not a contact problem on outside pitches, it's a <strong>pitch-recognition and timing</strong> problem. She needs work on tracking and recognition with live arms, not on plate-coverage mechanics.</p>
+  </div>
+</section>
+
+<!-- DIAGNOSIS CHAIN -->
+<section>
+  <div class="container">
+    <div class="section-no">04 · MECHANICAL DIAGNOSIS</div>
+    <h2>Linking Video Observations to Data Signatures</h2>
+    <p class="lead">Each thing your eyes are seeing in video has a specific, measurable fingerprint in the Blast and Rapsodo data. The fingerprints all point at the same root cause: torso opening before the barrel goes.</p>
+
+    <div class="chain">
+      <div class="chain-row">
+        <div class="from"><div class="lbl">Video Observation</div><div class="text">"Bat finishes flat"</div></div>
+        <div class="arrow">→</div>
+        <div class="to"><div class="lbl">Data Signature</div><div class="text">Vertical Bat Angle averages −23° (target −25 to −35°). 28% of swings finish at −7 to −17° (very flat).</div></div>
+      </div>
+      <div class="chain-row">
+        <div class="from"><div class="lbl">Video Observation</div><div class="text">"Hands tend to lead"</div></div>
+        <div class="arrow">→</div>
+        <div class="to"><div class="lbl">Data Signature</div><div class="text">Early Connection 117° (27° too open). Body has rotated open before the bat moves forward — hands chase to recover.</div></div>
+      </div>
+      <div class="chain-row">
+        <div class="from"><div class="lbl">Video Observation</div><div class="text">"Wrists roll at impact"</div></div>
+        <div class="arrow">→</div>
+        <div class="to"><div class="lbl">Data Signature</div><div class="text">Body rotates 25.7° from start of downswing to contact — the wrists are casting/rolling to square the bat after the body got there first.</div></div>
+      </div>
+      <div class="chain-row">
+        <div class="from"><div class="lbl">Game Symptom</div><div class="text">"Misses under the ball"</div></div>
+        <div class="arrow">→</div>
+        <div class="to"><div class="lbl">Data Signature</div><div class="text">Attack Angle +18.7°. Bottom-row launch angles 26–30°. The barrel is climbing through the bottom of the zone.</div></div>
+      </div>
+      <div class="chain-row">
+        <div class="from"><div class="lbl">Game Symptom</div><div class="text">"Grounders to left side"</div></div>
+        <div class="arrow">→</div>
+        <div class="to"><div class="lbl">Data Signature</div><div class="text">Inside pitches show pulled exit direction with low EV (47.9 mph) — being early/jammed on inner half, rolling over.</div></div>
+      </div>
+      <div class="chain-row">
+        <div class="from"><div class="lbl">Game Symptom</div><div class="text">"Struggles vs. velocity"</div></div>
+        <div class="arrow">→</div>
+        <div class="to"><div class="lbl">Data Signature</div><div class="text">Time to Contact 0.20s (target 0.16s). Distance drops 22% on 50+ mph pitches vs. slower pitches.</div></div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="lbl">The mechanical thread</div>
+      <p>Imagine a swing where the front shoulder stayed closed an extra 0.05 seconds. The hands wouldn't need to "lead" — they'd be working <em>with</em> the body instead of trying to outrun it. The barrel wouldn't drag and have to be wrist-flicked into impact. The bat path would have time to plane out instead of cutting upward in a hurry. The attack angle would settle into the 10–12° range. Time to contact would tighten. Inside pitches would get on-time hand-paths instead of jamming jobs. <strong>Every problem on this page traces to those 0.05 seconds of front-side patience.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- SESSION TRENDS -->
+<section>
+  <div class="container">
+    <div class="section-no">05 · TRENDS OVER TIME</div>
+    <h2>The Picture After May 1: Real Movement</h2>
+    <p class="lead">With cleaner data and the May 1 session added, the multi-week story has flipped. Launch angle climbed into the upper 20s mid-spring (the under-cut warning sign), but the last two sessions show recovery — and May 1 is now her best session by several leading indicators. The mechanical work is starting to pay off in the ball-flight data.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Session</th>
+            <th>Swings</th>
+            <th>Avg EV</th>
+            <th>P90 EV</th>
+            <th>Avg LA</th>
+            <th>% Under (LA &gt;35°)</th>
+            <th>Barrel%</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="session-row"><td>Mar 07</td><td class="num">57</td><td class="num">50.3</td><td class="num">56.6</td><td class="num">19.5</td><td class="num good">15.8%</td><td class="num">3.5%</td></tr>
+          <tr class="session-row"><td>Mar 13</td><td class="num">32</td><td class="num">50.6</td><td class="num">55.8</td><td class="num">21.0</td><td class="num bad">31.2%</td><td class="num bad">0.0%</td></tr>
+          <tr class="session-row"><td>Mar 31</td><td class="num">68</td><td class="num good">56.7</td><td class="num good">67.3</td><td class="num warn">24.4</td><td class="num warn">22.1%</td><td class="num">7.4%</td></tr>
+          <tr class="session-row"><td>Apr 21</td><td class="num">105</td><td class="num">53.9</td><td class="num">58.8</td><td class="num">22.4</td><td class="num good">17.1%</td><td class="num">5.7%</td></tr>
+          <tr class="session-row" style="background:rgba(255,210,74,0.06);"><td><strong>May 01</strong></td><td class="num">96</td><td class="num">54.1</td><td class="num good">62.5</td><td class="num">22.0</td><td class="num good">16.7%</td><td class="num good">10.4%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="lbl">May 1 progress check</div>
+      <p>Compared to the average of the prior four sessions: <strong>P90 EV +2.4 mph</strong>, <strong>under-ball rate −3 pts</strong>, <strong>grounder rate cut nearly in half (7.3% → 4.2%)</strong>, and <strong>barrel rate doubled (5.0% → 10.4%)</strong>. Spray has matured to a 71% middle-of-field distribution, which is a healthy approach indicator. This is the first session where leading-edge contact quality clearly broke from the spring baseline.</p>
+    </div>
+
+    <h3>The Within-Session Pattern Has Flipped Too</h3>
+    <p>The fatigue cliff from the Apr 24 Blast session is the contrast that makes May 1 meaningful. On Apr 24, swing quality fell off across the workout. On May 1 — same length session, more swings — the second half was <em>better</em> than the first:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>May 1 split</th>
+            <th>Avg EV</th>
+            <th>Avg LA</th>
+            <th>% Under (LA &gt;35°)</th>
+            <th>Barrel%</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="session-row"><td>First half (n=48)</td><td class="num">53.1</td><td class="num">21.7</td><td class="num warn">20.8%</td><td class="num">6.2%</td></tr>
+          <tr class="session-row"><td>Second half (n=48)</td><td class="num good">55.1</td><td class="num">22.2</td><td class="num good">12.5%</td><td class="num good">14.6%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>That direction reversal is the single most encouraging signal in this update. It suggests the corrective work is sticking under accumulated rep-load — the exact failure mode the Apr 24 Blast data flagged.</p>
+
+    <h3>The Apr 24 Fatigue Reference (For Context)</h3>
+    <p>This is the prior data point that May 1 is being measured against. The Apr 24 Blast session showed swing quality degrading across quartiles within one workout — the pattern May 1 has now broken:</p>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Within-Session Drift · Apr 24 Blast (n=144)</div>
+      <div class="chart-sub">Each quartile = 36 consecutive swings, chronological</div>
+      <svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg" style="width:100%; height: auto;">
+        <!-- Grid lines -->
+        <line x1="60" y1="40" x2="60" y2="240" stroke="#2a2f3b" stroke-width="1"/>
+        <line x1="60" y1="240" x2="780" y2="240" stroke="#2a2f3b" stroke-width="1"/>
+
+        <!-- Y axis labels (left: bat speed) -->
+        <text x="50" y="48" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="#5b6170">60</text>
+        <text x="50" y="98" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="#5b6170">55</text>
+        <text x="50" y="148" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="#5b6170">50</text>
+        <text x="50" y="198" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="#5b6170">45</text>
+        <text x="50" y="245" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="#5b6170">40</text>
+
+        <!-- X axis labels -->
+        <text x="150" y="262" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#9aa0ac">Q1 EARLY</text>
+        <text x="330" y="262" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#9aa0ac">Q2</text>
+        <text x="510" y="262" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#9aa0ac">Q3</text>
+        <text x="690" y="262" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#9aa0ac">Q4 LATE</text>
+
+        <!-- Bat speed line: 56.3, 50.97, 51.64, 49.85 (scale: 40-60 → 240-40) -->
+        <!-- y(60)=40, y(40)=240 → y = 240 - (val-40)/(20)*200 -->
+        <!-- Q1: 56.3 → 240 - 16.3/20*200 = 240-163 = 77 -->
+        <!-- Q2: 50.97 → 240 - 10.97/20*200 = 240-109.7 = 130.3 -->
+        <!-- Q3: 51.64 → 240 - 11.64/20*200 = 240-116.4 = 123.6 -->
+        <!-- Q4: 49.85 → 240 - 9.85/20*200 = 240-98.5 = 141.5 -->
+        <polyline points="150,77 330,130 510,124 690,142" fill="none" stroke="#ffd24a" stroke-width="3"/>
+        <circle cx="150" cy="77" r="6" fill="#ffd24a"/>
+        <circle cx="330" cy="130" r="6" fill="#ffd24a"/>
+        <circle cx="510" cy="124" r="6" fill="#ffd24a"/>
+        <circle cx="690" cy="142" r="6" fill="#ffd24a"/>
+
+        <!-- Annotations on points -->
+        <text x="150" y="68" text-anchor="middle" font-family="Bebas Neue" font-size="18" fill="#ffd24a">56.3</text>
+        <text x="330" y="121" text-anchor="middle" font-family="Bebas Neue" font-size="18" fill="#ffd24a">51.0</text>
+        <text x="510" y="115" text-anchor="middle" font-family="Bebas Neue" font-size="18" fill="#ffd24a">51.6</text>
+        <text x="690" y="133" text-anchor="middle" font-family="Bebas Neue" font-size="18" fill="#ffd24a">49.9</text>
+
+        <!-- Title -->
+        <text x="60" y="22" font-family="JetBrains Mono" font-size="11" fill="#9aa0ac" letter-spacing="2">BAT SPEED (MPH)</text>
+
+        <!-- Drop annotation -->
+        <line x1="150" y1="200" x2="690" y2="200" stroke="#ff5d5d" stroke-width="1" stroke-dasharray="4 4"/>
+        <text x="420" y="218" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#ff5d5d">↓ 6.4 MPH DROP WITHIN ONE SESSION</text>
+      </svg>
+    </div>
+
+    <p>Same pattern shows up everywhere: <strong>Q1 Early Connection was 105°</strong> (close to ideal). <strong>By Q2 it had blown out to 122°</strong>. Attack Angle climbed from 10° to 22°. Time to contact slowed from 0.18s to 0.21s. <em>She starts every session like a different hitter than she finishes it.</em></p>
+
+    <p>The implication for tournaments is direct: by game 3 of a Saturday, she is mechanically the Q3-Q4 version of herself. The program below has to include conditioning and pattern-stickiness work, not just movement quality work.</p>
+  </div>
+</section>
+
+<!-- VELOCITY -->
+<section>
+  <div class="container">
+    <div class="section-no">06 · VELOCITY VULNERABILITY</div>
+    <h2>What Happens When the Pitch Speeds Up</h2>
+    <p class="lead">The user's read — "she struggles against velocity" — is supported by the Rapsodo data, but the failure mode is specific: she doesn't lose exit velocity, she loses launch angle and distance. She's making contact, but late and on the front of the ball.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Pitch Velo Bucket</th>
+            <th>Contacts</th>
+            <th>Avg EV</th>
+            <th>Avg LA</th>
+            <th>Avg Distance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="session-row"><td>&lt; 35 mph</td><td class="num">98</td><td class="num">54.2</td><td class="num">25.7°</td><td class="num">131 ft</td></tr>
+          <tr class="session-row"><td>35–45 mph</td><td class="num">147</td><td class="num">52.7</td><td class="num">23.7°</td><td class="num">126 ft</td></tr>
+          <tr class="session-row"><td>45–55 mph</td><td class="num">98</td><td class="num">53.9</td><td class="num">18.4°</td><td class="num">122 ft</td></tr>
+          <tr class="session-row"><td>55+ mph <span style="color:#9aa0ac;font-size:0.85em">(small sample)</span></td><td class="num">14</td><td class="num">57.5</td><td class="num bad">6.0°</td><td class="num bad">77 ft</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>EV holds steady at ~53–58 mph across all buckets — when she does square it up, contact quality is roughly the same. But against the highest-velocity bucket, launch angle collapses to 6° and distance drops sharply. The swing arrives too late to get the bat under the ball's center of mass for lift, so contact becomes line-drive-or-grounder. The 55+ sample is small (n=14 across all five sessions), so treat it as directional rather than definitive — but the direction is unmistakable, and she's likely missing more pitches in that bucket than the cage data shows (misses aren't logged).</p>
+
+    <div class="callout">
+      <div class="lbl">The recruit-readiness implication</div>
+      <p>Top 14U travel pitchers throw 55–62 mph; the next two summers will see her facing 60–68 mph regularly. With a 0.20s time-to-contact, she has roughly 0.07–0.09 seconds of decision time after release on a 60-mph pitch — below recruitable benchmarks. <strong>Cutting time-to-contact is the single highest-leverage college-readiness metric</strong> in this dataset, and Phase 3 of the program targets it directly.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THE PROGRAM -->
+<section>
+  <div class="container">
+    <div class="section-no">07 · THE 8-WEEK SWING PROGRAM</div>
+    <h2>From Diagnosis to Action</h2>
+    <p class="lead">The program is built around a single mechanical priority: <strong>delaying torso rotation until the hands have committed forward.</strong> Everything else — bat plane, time to contact, attack angle, low-pitch coverage — improves automatically when that one thing fixes. Each phase escalates the difficulty (tee → toss → BP → live).</p>
+
+    <h3>How to Run It</h3>
+    <p>Three sessions per week, 60–75 minutes each. Always retest 2–3 quality Blast/Rapsodo swings at the start (clean baseline) and end (fatigued state) of each session. Track the KPIs at the bottom of this page weekly. Heavy-load swings (overload bat) early in session when neurally fresh; underload bat (-25%) when fatiguing to maintain bat-speed signal.</p>
+
+    <!-- PHASE 1 -->
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-no">PHASE 01</div>
+        <div class="phase-title">Body-Bat Sequencing — Restore the Connection</div>
+        <div class="phase-weeks">WEEKS 1–2 · TEE-DOMINANT</div>
+      </div>
+      <div class="phase-body">
+        <div class="phase-goal">Goal: Drop average Early Connection from 117° toward 100°. Get her body to feel "still and closed" while the hands work first. We don't yet care about ball flight — we care about the feeling.</div>
+
+        <div class="drills">
+          <div class="drill">
+            <div class="drill-name">Wall Tee — Front Side Wall</div>
+            <div class="drill-spec">3 sets × 10 swings · all locations</div>
+            <div class="drill-desc">Set up with a wall or net 4 inches off her front shoulder. The constraint forbids early shoulder flight; if she opens, she taps the wall.</div>
+            <div class="drill-cue"><strong>Cue:</strong> "Hands first, shoulder later. The wall is closer than you think."</div>
+          </div>
+          <div class="drill">
+            <div class="drill-name">Connection Ball — Tee Work</div>
+            <div class="drill-spec">3 sets × 8 swings</div>
+            <div class="drill-desc">Soft ball or rolled towel between front elbow and rib cage. Must stay connected through contact; if it drops before extension, the rep doesn't count.</div>
+            <div class="drill-cue"><strong>Cue:</strong> "Squeeze the ball through the ball." Targets Connection Score directly.</div>
+          </div>
+          <div class="drill">
+            <div class="drill-name">Two-Tee Path Drill</div>
+            <div class="drill-spec">2 sets × 10 swings</div>
+            <div class="drill-desc">Two tees in a line, back tee with ball, front tee empty 6" lower. She must miss the front tee on her path. Forces hands-inside-the-ball and a downward bat entry into the zone — directly attacks the steep attack angle.</div>
+            <div class="drill-cue"><strong>Cue:</strong> "Knob to the inside of the ball."</div>
+          </div>
+          <div class="drill">
+            <div class="drill-name">Pause Load (1-2-3 Drill)</div>
+            <div class="drill-spec">3 sets × 6 swings</div>
+            <div class="drill-desc">Coach calls "1" (load), "2" (pause and HOLD for full second), "3" (swing). The hold burns the closed-front-side feel into kinesthetic memory.</div>
+            <div class="drill-cue"><strong>Cue:</strong> "Patient on the pause. The pitcher waits for you."</div>
+          </div>
+        </div>
+
+        <h4>Phase 1 Conditioning Add-on (15 min, end of session)</h4>
+        <p>Med-ball rotational throws (8 lb, 3×6 each side, focused on hip-shoulder separation). Cable or band anti-rotation work — Pallof press 3×10 each side. Goal is to build the <em>physical capacity</em> to keep the front side closed, not just the technique.</p>
+      </div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-no">PHASE 02</div>
+        <div class="phase-title">Bat Plane & Attack Angle — Level the Climb</div>
+        <div class="phase-weeks">WEEKS 3–4 · TEE + FRONT TOSS</div>
+      </div>
+      <div class="phase-body">
+        <div class="phase-goal">Goal: Drop Attack Angle from 18.7° toward 12°. Drop bottom-row launch angles from 30° toward 18°. Stop missing under low pitches. Phase 1 sequencing must be holding before adding Phase 2.</div>
+
+        <div class="drills">
+          <div class="drill">
+            <div class="drill-name">High-Tee Down Drill</div>
+            <div class="drill-spec">3 sets × 8 swings</div>
+            <div class="drill-desc">Tee set 4 inches above her natural mid-zone, with target net low and forward. She has to drive the high pitch on a low line. Trains a shorter, more direct path through the upper third.</div>
+            <div class="drill-cue"><strong>Cue:</strong> "Top hand down through the back of the ball."</div>
+          </div>
+          <div class="drill">
+            <div class="drill-name">Low-Tee Stay-Through</div>
+            <div class="drill-spec">3 sets × 8 swings</div>
+            <div class="drill-desc">Tee at the bottom of her zone (knee-high). Coach holds a glove or pad at her belly button height — bat must not pass it on follow-through. Forces bat to stay through the ball longer with less upward exit.</div>
+            <div class="drill-cue"><strong>Cue:</strong> "Through it, not under it." Directly addresses bottom-row 30° LA.</div>
+          </div>
+          <div class="drill">
+            <div class="drill-name">Reverse Foot Toss (Inside-Out)</div>
+            <div class="drill-spec">3 sets × 8 swings</div>
+            <div class="drill-desc">Coach feeds front toss from low-and-in angle. She has to stay inside the ball and drive it middle/oppo. Trains the inside-pitch path that has been her dead zone.</div>
+            <div class="drill-cue"><strong>Cue:</strong> "Knob inside, barrel late, drive to right-center."</div>
+          </div>
+          <div class="drill">
+            <div class="drill-name">PVC On-Plane Drill</div>
+            <div class="drill-spec">2 sets × 10 dry swings + 10 live</div>
+            <div class="drill-desc">PVC pipe or stick laid along the pitch's plane (slight downward). Bat must enter and exit on the line, no more than 6" off plane. Builds On-Plane Efficiency directly (currently 46%; target 60%+).</div>
+            <div class="drill-cue"><strong>Cue:</strong> "Stay on the runway."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-no">PHASE 03</div>
+        <div class="phase-title">Time to Contact & Velocity Readiness</div>
+        <div class="phase-weeks">WEEKS 5–6 · OVERLOAD/UNDERLOAD + LIVE PITCHING</div>
+      </div>
+      <div class="phase-body">
+        <div class="phase-goal">Goal: Drop Time to Contact from 0.20s toward 0.17s. Build readiness for 55+ mph pitching. Locked-in Phase 1+2 mechanics under increasing time pressure.</div>
+
+        <div class="drills">
+          <div class="drill">
+            <div class="drill-name">Overload/Underload Bat Series</div>
+            <div class="drill-spec">3 rounds: 5 heavy / 5 normal / 5 light</div>
+            <div class="drill-desc">+25% bat (heavier than her gamer), gamer, then -25% bat (lighter). Trains both strength and bat-speed signal. Always normal bat last so muscle memory is on the gamer.</div>
+            <div class="drill-cue"><strong>Cue:</strong> "Same intent every set. Bat is the variable, not the swing."</div>
+          </div>
+          <div class="drill">
+            <div class="drill-name">Short-Distance Front Toss</div>
+            <div class="drill-spec">3 sets × 10 swings · 12-15 ft toss</div>
+            <div class="drill-desc">Standard front toss but coach moves up to 12–15 feet (vs typical 25). Effective velocity is ~50–55 mph at home. Forces shorter time to contact AND inside-the-ball decisions. Start at 18 ft for the first week, work down.</div>
+            <div class="drill-cue"><strong>Cue:</strong> "Quiet head, hands first." Build it gradually — protect her face.</div>
+          </div>
+          <div class="drill">
+            <div class="drill-name">High-Velocity Machine Work</div>
+            <div class="drill-spec">2 sets × 12 swings · 58–62 mph</div>
+            <div class="drill-desc">Pitching machine set 3–5 mph above her current game velocity. Mix locations. The point is exposure, not pretty contact — she needs reps where she has to commit.</div>
+            <div class="drill-cue"><strong>Cue:</strong> "Trust the load. Don't add."</div>
+          </div>
+          <div class="drill">
+            <div class="drill-name">Two-Strike Approach Drill</div>
+            <div class="drill-spec">2 sets × 8 swings</div>
+            <div class="drill-desc">Mandatory two-strike stance: choke up half-inch, slightly wider base, mental commitment to "spoil and stay alive." Builds the contact-first version of the swing she needs against velocity.</div>
+            <div class="drill-cue"><strong>Cue:</strong> "Shorter is faster. Square it up."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 4 -->
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-no">PHASE 04</div>
+        <div class="phase-title">Pitch Recognition & Stickiness Under Fatigue</div>
+        <div class="phase-weeks">WEEKS 7–8 · LIVE PITCHING + GAME TRANSFER</div>
+      </div>
+      <div class="phase-body">
+        <div class="phase-goal">Goal: Carry mechanics into competition. Close the cage-vs-game gap. Fix the within-session decline (currently loses 6.4 mph bat speed Q1 to Q4).</div>
+
+        <div class="drills">
+          <div class="drill">
+            <div class="drill-name">Live Arm — Recognition Reps</div>
+            <div class="drill-spec">3 rounds × 8 takes/swings</div>
+            <div class="drill-desc">Live BP from a coach or older pitcher with mixed inside/outside locations. She calls each pitch's location BEFORE swinging ("away, away, in, away"). Trains pitch tracking that the cage cannot.</div>
+            <div class="drill-cue"><strong>Cue:</strong> "See it land. Don't guess location."</div>
+          </div>
+          <div class="drill">
+            <div class="drill-name">Outside Pitch Take-or-Hammer Drill</div>
+            <div class="drill-spec">3 sets × 10 pitches</div>
+            <div class="drill-desc">Live BP. Coach throws random in/out mix. She must take all inner-third pitches and hammer all outside pitches to right-center. Resets the brain to attack outside pitches (her strength) instead of fearing them.</div>
+            <div class="drill-cue"><strong>Cue:</strong> "Plate is mine. Outside is mine."</div>
+          </div>
+          <div class="drill">
+            <div class="drill-name">Fatigue Stack Drill</div>
+            <div class="drill-spec">5 rounds × 10 swings, no rest between rounds</div>
+            <div class="drill-desc">Direct attack on the within-session degradation. Maintain mechanics through round 5 — coach watches Early Connection visually. If she opens early, the round restarts. Builds the habit of late-game mechanics.</div>
+            <div class="drill-cue"><strong>Cue:</strong> "Every swing is the first swing of the game."</div>
+          </div>
+          <div class="drill">
+            <div class="drill-name">Velocity-Then-Slow Mix</div>
+            <div class="drill-spec">3 sets · 5 fast / 5 slow / 5 fast</div>
+            <div class="drill-desc">Machine at 60 mph, then 38 mph, then 60 mph. Trains the timing recovery game pitchers will demand of her. Most 14u hitters can do one speed, not the transitions.</div>
+            <div class="drill-cue"><strong>Cue:</strong> "Same swing. Different load timing."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KPI TARGETS -->
+<section>
+  <div class="container">
+    <div class="section-no">08 · KPI TARGETS</div>
+    <h2>What to Measure, What to Hit</h2>
+    <p class="lead">Track these weekly. The Blast metrics are leading indicators (mechanical health). The Rapsodo metrics are lagging indicators (the ball doesn't lie). When all four leading indicators are trending green, the lagging indicators will follow within 2–3 sessions.</p>
+
+    <h3>Leading Indicators (Blast — measure first)</h3>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="name">Early Connection</div><div class="nums"><span class="now">117°</span><span class="arrow">→</span><span class="target">100°</span><span class="unit">target</span></div></div>
+      <div class="kpi"><div class="name">Time to Contact</div><div class="nums"><span class="now">0.20s</span><span class="arrow">→</span><span class="target">0.17s</span><span class="unit">target</span></div></div>
+      <div class="kpi"><div class="name">Attack Angle</div><div class="nums"><span class="now">18.7°</span><span class="arrow">→</span><span class="target">12°</span><span class="unit">target</span></div></div>
+      <div class="kpi"><div class="name">On-Plane Efficiency</div><div class="nums"><span class="now">46%</span><span class="arrow">→</span><span class="target">60%</span><span class="unit">target</span></div></div>
+      <div class="kpi"><div class="name">Bat Speed (avg)</div><div class="nums"><span class="now">52 mph</span><span class="arrow">→</span><span class="target">57 mph</span><span class="unit">target</span></div></div>
+      <div class="kpi"><div class="name">Connection Score</div><div class="nums"><span class="now">42</span><span class="arrow">→</span><span class="target">60</span><span class="unit">target</span></div></div>
+    </div>
+
+    <h3>Lagging Indicators (Rapsodo — measure to verify)</h3>
+    <p style="color:#9aa0ac; font-size:0.95em; margin-top:-8px;">Current values shown are May 1 numbers. Green = already at or near target.</p>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="name">Avg Exit Velocity</div><div class="nums"><span class="now">54 mph</span><span class="arrow">→</span><span class="target">60 mph</span><span class="unit">target</span></div></div>
+      <div class="kpi"><div class="name">% LA in 8°–25°</div><div class="nums"><span class="now">43%</span><span class="arrow">→</span><span class="target">55%</span><span class="unit">target</span></div></div>
+      <div class="kpi"><div class="name">% Under (LA &gt;35°)</div><div class="nums"><span class="now" style="color:#6fdc8c">17%</span><span class="arrow">→</span><span class="target">&lt;12%</span><span class="unit">close</span></div></div>
+      <div class="kpi"><div class="name">Barrel %</div><div class="nums"><span class="now" style="color:#6fdc8c">10%</span><span class="arrow">→</span><span class="target">15%</span><span class="unit">close</span></div></div>
+      <div class="kpi"><div class="name">EV on Low-In Zone</div><div class="nums"><span class="now">44 mph</span><span class="arrow">→</span><span class="target">52 mph</span><span class="unit">target</span></div></div>
+      <div class="kpi"><div class="name">Avg Distance</div><div class="nums"><span class="now">128 ft</span><span class="arrow">→</span><span class="target">155 ft</span><span class="unit">target</span></div></div>
+    </div>
+
+    <h3>Re-Test Cadence</h3>
+    <p>Full Blast capture (40+ swings) every two weeks. Full Rapsodo session (50+ contacts mixing tee, front toss, machine) every three weeks. Spot-check any single metric mid-week if a phase isn't progressing as expected.</p>
+
+    <div class="callout">
+      <div class="lbl">Closing thought</div>
+      <p>Brooklyn already has the ceiling — a 65 mph bat speed, top-end EVs in the upper 80s, balls leaving the bat 200+ ft on her best strikes, and a verified 200-foot game shot. Those aren't 14U-typical numbers. They're recruitable. May 1 is the first session where the corrective work clearly translated to ball-flight data: barrel rate doubled, the within-session fatigue cliff reversed, and the under-cut tendency softened. The work over the next eight weeks isn't about adding anything new. It's about reinforcing the postural patience that's starting to show up, until it shows up on every swing. <em>Same hitter, same body, just sequenced correctly — and the data now says it's beginning to stick.</em></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">REPORT GENERATED · UPDATED MAY 2026 · 358 RAPSODO + 144 BLAST CONTACTS · CONFIDENTIAL</div>
+</footer>
+
+</body>
+</html>
